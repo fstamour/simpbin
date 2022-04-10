@@ -13,7 +13,7 @@
 (defun read-integer (stream)
   "Read a 32 bit, little-endian integer from the stream."
   (the  (integer 0 #.(1- (expt 2 32)))
-	(nibbles:read-ub32/le stream)))
+  (nibbles:read-ub32/le stream)))
 
 
 ;;; header
@@ -30,7 +30,7 @@
 the variant number."
   (let* ((signature ))
     (when (eq 1397639490 ;; It's the string "BINS" read as an integer
-	      (read-integer stream))
+        (read-integer stream))
       ;; Read the variant
       (read-integer stream))))
 
@@ -48,7 +48,7 @@ First the size is written, then the content of the vector."
   "Read an octet-vector of octets to the stream.
 Read the length of the vector first, then the content."
   (let* ((length (read-integer stream))
-	 (octet-vector (nibbles:make-octet-vector length)))
+         (octet-vector (nibbles:make-octet-vector length)))
     (read-sequence octet-vector stream)
     octet-vector))
 
@@ -56,7 +56,7 @@ Read the length of the vector first, then the content."
 ;;; string
 
 (defun write-binary-string (string stream
-			    &key (encoding :utf8))
+          &key (encoding :utf8))
   "Write a string to stream."
   (write-octets
    (flexi-streams:string-to-octets
@@ -65,7 +65,7 @@ Read the length of the vector first, then the content."
    stream))
 
 (defun read-binary-string (stream
-			   &key (encoding :utf8))
+                           &key (encoding :utf8))
   "Read a string from stream."
   (flexi-streams:octets-to-string
    (read-octets stream)
@@ -75,32 +75,31 @@ Read the length of the vector first, then the content."
 ;;; multiple octets
 
 (defmacro with-output-to-binary-file ((stream filespec
-					      &rest options
-					      &key 
-					      if-exists
-					      if-does-not-exist
-					      external-format)
-				      &body body)
+                                       &rest options
+                                       &key
+                                         if-exists
+                                         if-does-not-exist
+                                         external-format)
+                                      &body body)
   "Helper macro to open a file for binary output."
   (declare (ignore if-exists if-does-not-exist external-format))
   `(with-open-file (,stream ,filespec
-			    :direction :output
-			    :element-type 'nibbles:octet
-			    ,@options)
+                            :direction :output
+                            :element-type 'nibbles:octet
+                            ,@options)
      ,@body))
 
 (defmacro with-input-from-binary-file ((stream filespec
-					      &rest options
-					      &key 
-					      if-exists
-					      if-does-not-exist
-					      external-format)
-				      &body body)
+                                        &rest options
+                                        &key
+                                          if-exists
+                                          if-does-not-exist
+                                          external-format)
+                                       &body body)
   "Helper macro to open a file for binary input."
   (declare (ignore if-exists if-does-not-exist external-format))
   `(with-open-file (,stream ,filespec
-			    :direction :input
-			    :element-type 'nibbles:octet
-			    ,@options)
+                            :direction :input
+                            :element-type 'nibbles:octet
+                            ,@options)
      ,@body))
-

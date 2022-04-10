@@ -26,7 +26,7 @@ different variants in the future.
 
 The API is very simple, if you want to do something more advanced you
 can use the usual functions that deals with streams like flexi-streams
-and nibbles (and the standard functions of course.
+and nibbles (and the standard functions of course).
 
 ### Read/write an integer
 
@@ -65,11 +65,11 @@ Read the length of the vector first, then the content." ...)
 
 ```lisp
 (defun write-binary-string (string stream
-			    &key (encoding :utf8))
+          &key (encoding :utf8))
   "Write a string to stream." ...)
 
 (defun read-binary-string (stream
-			   &key (encoding :utf8))
+         &key (encoding :utf8))
   "Read a string from stream." ...)
 ```
 
@@ -77,23 +77,23 @@ Read the length of the vector first, then the content." ...)
 
 ```lisp
 (defmacro with-output-to-binary-file ((stream filespec
-					      &rest options
-					      &key
-					      if-exists
-					      if-does-not-exist
-					      external-format)
-				      &body body)
+                &rest options
+                &key
+                if-exists
+                if-does-not-exist
+                external-format)
+              &body body)
   "Helper macro to open a file for binary output." ...)
 ```
 
 ```lisp
 (defmacro with-input-from-binary-file ((stream filespec
-					      &rest options
-					      &key
-					      if-exists
-					      if-does-not-exist
-					      external-format)
-				      &body body)
+                &rest options
+                &key
+                if-exists
+                if-does-not-exist
+                external-format)
+              &body body)
   "Helper macro to open a file for binary input."
 ```
 
@@ -102,8 +102,8 @@ Read the length of the vector first, then the content." ...)
 ### Write a file
 ```lisp
 (with-output-to-binary-file (output "/tmp/test.bins"
-			    :if-exists :overwrite
-			    :if-does-not-exist :create)
+          :if-exists :overwrite
+          :if-does-not-exist :create)
   (write-header output)
   (write-binary-string "Hello" output))
 ```
@@ -114,6 +114,15 @@ Read the length of the vector first, then the content." ...)
   (read-header input)
   (read-binary-string input))
 ```
+
+## Examples of libraries that could be used with simpbin
+
+- [cl-intbytes](https://quickdocs.org/cl-intbytes) - Convert between
+  any-base integers and byte arrays interchangeably
+- [ieee-floats](https://quickdocs.org/ieee-floats) - Convert floating
+  point values to IEEE 754 binary representation
+- [trivial-bit-streams](https://quickdocs.org/trivial-bit-streams) -
+  Flexible buffered bit streams
 
 ## Alternatives
 
