@@ -3,9 +3,10 @@
 (defpackage #:simpbin.test
   (:use :cl #:simpbin)
   (:import-from #:parachute
-    #:define-test
-    #:is
-    #:true #:false))
+                #:define-test
+                #:is
+                #:true #:false)
+  (:export #:test-all))
 
 (in-package #:simpbin.test)
 
@@ -15,13 +16,49 @@
 (define-test write-integer
   (is equalp
       (flexi-streams:with-output-to-sequence (output)
-  (write-integer 42 output))
+        (write-integer 42 output))
       #(42 0 0 0)))
 
 (define-test read-integer
-  (is eq 42
+  (is = 42
       (flexi-streams:with-input-from-sequence (input #(42 0 0 0))
-  (read-integer input))))
+        (read-integer input))))
+
+
+;;; varint
+
+(define-test write-varint
+  (is equalp
+      (flexi-streams:with-output-to-sequence (output)
+        (write-varint 42 output))
+      #(42))
+  (is equalp
+      (flexi-streams:with-output-to-sequence (output)
+        (write-varint 800 output))
+      #(160 6))
+  (loop :for i :below 128
+        :collect
+        (is = `#(,i)
+            (flexi-streams:with-output-to-sequence (output)
+              (write-varint i output)))))
+
+(define-test read-varint
+  (is = 42
+      (flexi-streams:with-input-from-sequence (input #(42))
+        (read-varint input)))
+  (is = 800
+      (flexi-streams:with-input-from-sequence (input #(160 6))
+        (read-varint input))))
+
+(define-test varint-roundtrip
+  (loop :for i :below 100000
+        :do (assert
+             (= i (flexi-streams:with-input-from-sequence
+                      (input
+                       (flexi-streams:with-output-to-sequence (output)
+                         (write-varint i output)))
+                    (read-varint input)))
+             (i))))
 
 
 ;;; header
@@ -29,12 +66,12 @@
 (define-test write-header
   (is equalp
       (flexi-streams:with-output-to-sequence (output)
-  (write-header output))
+        (write-header output))
       #(66 73 78 83 0 0 0 0))
-  (is eq
+  (is =
       (length
        (flexi-streams:with-output-to-sequence (output)
-   (write-header output)))
+         (write-header output)))
       8))
 
 (define-test read-header
@@ -84,11 +121,11 @@
 (define-test read-binary-string
   (is equalp
       (flexi-streams:with-input-from-sequence (input #(2 0 0 0 104 105))
-  (read-binary-string input))
+        (read-binary-string input))
       "hi")
   (is equalp
       (flexi-streams:with-input-from-sequence (input #(37 0 0 0 116 104 105 115 32 105 115 32 97 32 115 116 114 105 110 103 32 119 105 116 104 32 197 159 195 182 109 195 169 32 117 110 105 99 111 100 101))
-  (read-binary-string input))
+        (read-binary-string input))
       "this is a string with şömé unicode"))
 
 
@@ -98,18 +135,23 @@
 ;; with the file system.
 #|
 (with-output-to-binary-file (output "/tmp/test.bins"
-          :if-exists :overwrite
-          :if-does-not-exist :create)
-  (write-header output)
-  (write-binary-string "Hello" output))
+:if-exists :overwrite
+:if-does-not-exist :create)
+(write-header output)
+(write-binary-string "Hello" output))
 
 (with-input-from-binary-file (input "/tmp/test.bins")
-  (read-header input)
-  (read-binary-string input))
+(read-header input)
+(read-binary-string input))
 ;; => "Hello"
 
 (with-input-from-binary-file (input "/tmp/test.bins")
-  (read-header input)
-  (read-binary-string input)
-  (peek-char nil input nil))
+(read-header input)
+(read-binary-string input)
+(peek-char nil input nil))
 |#
+
+
+
+(defun test-all ()
+  (parachute:test #.*package*))
