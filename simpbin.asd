@@ -4,7 +4,7 @@
 (in-package #:simpbin.asd)
 
 (asdf:defsystem #:simpbin
-  :description "Describe simpbin here"
+  :description "A common lisp library to store data in a binary format"
   :author "Francis St-Amour"
   :license  "GNU GPLv3"
   :version "0.0.1"
@@ -17,7 +17,6 @@
                ;; a bit like fast-io, but works with "normal" streams
                #:nibbles)
   :in-order-to ((asdf:test-op (asdf:test-op :simpbin/test)))
-  :serial t
   :components ((:file "simpbin")))
 
 (asdf:defsystem "simpbin/test"
