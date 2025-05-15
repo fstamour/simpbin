@@ -2,6 +2,8 @@
 
 > A common lisp library to store data in a binary format
 
+[GitHub](https://github.com/fstamour/simpbin) - [GitLab](https://gitlab.com/fstamour/simpbin)
+
 - Simple, optional 8 bytes header
 - No size limits
 - No index
@@ -165,6 +167,9 @@ Read the length of the vector (using `read-varint') first, then the content." ..
 
 ## Alternatives
 
+- [shinmera/binary-structures](https://shinmera.github.io/binary-structures/)
+  "library implementing a compiler to make parsing binary files or
+  structures easier"
 - [zcdb](http://www.xach.com/lisp/zcdb/) for immutable (but easy to
   rebuild) key-value database.
 - [safe read](https://github.com/phoe/safe-read) to safely read
