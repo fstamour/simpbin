@@ -32,17 +32,18 @@
 
 ;;; integer
 
+
 (defconstant +integer-length+ 32
   "Number of bits read and writen by `read-integer' and `write-integer'.")
 
 (defun write-integer (integer stream)
   "Write a 32 bit, little-endian unsigned INTEGER to STREAM."
-  (declare (type (integer 0 #.(1- (expt 2 +integer-length+))) ))
+  (declare (type (integer 0 #.(1- (expt 2 32))) ))
   (nibbles:write-ub32/le integer stream))
 
 (defun read-integer (stream)
   "Read a 32 bit, little-endian unsigned INTEGER from STREAM."
-  (the  (integer 0 #.(1- (expt 2 +integer-length+)))
+  (the  (integer 0 #.(1- (expt 2 32)))
         (nibbles:read-ub32/le stream)))
 
 
