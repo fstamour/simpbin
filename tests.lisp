@@ -129,6 +129,21 @@
       "this is a string with şömé unicode"))
 
 
+;;; bit-vector
+
+(define-test write-bit-vector
+  (is equalp
+      (flexi-streams:with-output-to-sequence (output)
+        (write-bit-vector #*1010 output))
+      #(4 5 0 0 0)))
+
+(define-test read-bit-vector
+  (is equalp
+      #*1010
+      (flexi-streams:with-input-from-sequence (input #(4 5 0 0 0))
+        (read-bit-vector input))))
+
+
 ;;; with-macros
 
 ;; These tests are not part of the unit tests because they interact

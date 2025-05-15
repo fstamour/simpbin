@@ -6,7 +6,12 @@
 - No size limits
 - No index
 - Unstructured
-- Small API (6 functions, 2 macros)
+- Small API. Provide `read`/`write` functions for:
+  - integers (32-bit or varint)
+  - octets
+  - strings
+  - bit-vecors
+  - optional header
 - Operates on streams
 
 ## Design
@@ -16,7 +21,9 @@ worry about special characters and be able to iterate on them
 afterwards.
 
 So I came up with the simplest "format" I could think of: write the
-`length of the string`, then the `string` and simply repeat that.
+`length of the string`, then the `string` and simply repeat
+that. (Years later, I've learnt that this is often called a [flat-file
+database](https://en.m.wikipedia.org/wiki/Flat-file_database).)
 
 For good measure, I added a header consisting of a four bytes
 signature `BINS` and another four reserved bytes so that I could have
@@ -28,6 +35,8 @@ The API is very simple, if you want to do something more advanced you
 can use the usual functions that deals with streams like flexi-streams
 and nibbles (and the standard functions of course).
 
+<!-- TODO the docstring in the readme are out of sync with the code -->
+
 ### Read/write an integer
 
 ```lisp
@@ -36,6 +45,16 @@ and nibbles (and the standard functions of course).
 
 (defun write-integer (integer stream)
   "Write a 32 bit, little-endian integer to the stream." ...)
+```
+
+### Read/write an variable-length integer
+
+```lisp
+(defun read-varint (stream))
+  "Read a varint-encoded integer from the stream." ...)
+
+(defun write-varint (integer stream)
+  "Write a varint-encoded integer to the stream." ...)
 ```
 
 ### Read/write a header
@@ -54,11 +73,21 @@ the variant number." ...)
 ```lisp
 (defun write-octets (octet-vector stream)
   "Write an octet-vector of octets to the stream.
-First the size is written, then the content of the vector." ...)
+First the size is written (using `write-integer'), then the content of the vector." ...)
 
 (defun read-octets (stream)
   "Read an octet-vector of octets to the stream.
-Read the length of the vector first, then the content." ...)
+Read the length of the vector (using `read-integer') first, then the content." ...)
+```
+
+```lisp
+(defun write-octets* (octet-vector stream)
+  "Write an octet-vector of octets to the stream.
+First the size is written (using `write-varint'), then the content of the vector." ...)
+
+(defun read-octets* (stream)
+  "Read an octet-vector of octets to the stream.
+Read the length of the vector (using `read-varint') first, then the content." ...)
 ```
 
 ### Read/write strings
@@ -69,6 +98,16 @@ Read the length of the vector first, then the content." ...)
   "Write a string to stream." ...)
 
 (defun read-binary-string (stream
+         &key (encoding :utf8))
+  "Read a string from stream." ...)
+```
+
+```lisp
+(defun write-binary-string* (string stream
+          &key (encoding :utf8))
+  "Write a string to stream." ...)
+
+(defun read-binary-string* (stream
          &key (encoding :utf8))
   "Read a string from stream." ...)
 ```
