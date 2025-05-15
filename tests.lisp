@@ -38,7 +38,7 @@
       #(160 6))
   (loop :for i :below 128
         :collect
-        (is = `#(,i)
+        (is equalp `#(,i)
             (flexi-streams:with-output-to-sequence (output)
               (write-varint i output)))))
 
